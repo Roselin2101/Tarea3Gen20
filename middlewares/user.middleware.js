@@ -1,4 +1,4 @@
-const AppError = require('../utils/AppError');
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const User = require('../models/users.model');
 
@@ -24,7 +24,6 @@ exports.validIfExistUsereEmail = catchAsync(async (req, res, next) => {
   const { email } = req.body;
 
   const user = await User.findOne({
-    attributes: ['id', 'name', 'email'],
     where: {
       email: email.toLowerCase(),
     },

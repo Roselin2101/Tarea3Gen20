@@ -4,10 +4,12 @@ const {
   findOneUser,
   updateUser,
   deleteUser,
+  updatePassword,
 } = require('../controllers/user.controllers');
 const { validIfExistUser } = require('../middlewares/user.middleware');
 const { check } = require('express-validator');
 const { validateFields } = require('../middlewares/validateFields.middleware');
+const { protect, protectAccountOwner } = require('../middlewares/auth.middleware');
 
 const router = Router();
 
@@ -16,6 +18,8 @@ router.get('/', findAllUsers);
 
 router.get('/:id', validIfExistUser, findOneUser);
 // http://localhost:3001/api/v1/users/1
+
+router.use(protect);
 
 router.patch(
   '/:id',
@@ -28,6 +32,20 @@ router.patch(
 
   validIfExistUser,
   updateUser
+);
+
+router.patch(
+  '/password/:id',
+  [
+    check('currentPasword', 'The current password must be mandatory')
+      .not()
+      .isEmpty(),
+    check('newPassword', 'The new password must be mandatory').not().isEmpty(),
+    validateFields,
+    validIfExistUser,
+    protectAccountOwner
+  ],
+  updatePassword
 );
 // http://localhost:3001/api/v1/users/1
 

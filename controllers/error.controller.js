@@ -1,4 +1,24 @@
-const AppError = require('../utils/AppError');
+const AppError = require('../utils/appError');
+
+/**
+ * If the data type sent to the server does not match what was expected, then return a new AppError
+ * object with a message and a status code of 400.
+ */
+const handleCastError22P02 = () =>
+  new AppError('Some type of data send does not match was expected', 400);
+
+/**
+ * If the token is invalid, throw an error.
+ */
+const handleJWTError = () =>
+  new AppError('Invalid Token. Please login again!', 401);
+
+/**
+ * If the error is a JWT expired error, then return a new AppError with a message of 'Your token has
+ * expired! Please login again.' and a status code of 401.
+ */
+const handleJWTExpiredError = () =>
+  new AppError('Your token has expired! Please login again.', 401);
 
 /**
  * It takes an error object and a response object as arguments, and returns a response object with the
@@ -65,6 +85,11 @@ const globalErrorHandler = (err, req, res, next) => {
     if (!error.parent?.code) {
       error = err;
     }
+
+    if (error.parent?.code === '22P02') error = handleCastError22P02(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError(error);
+    if (error.name === 'TokenExpiredError')
+      error = handleJWTExpiredError(error);
 
     sendErrorProd(error, res);
   }

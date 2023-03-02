@@ -6,6 +6,7 @@ const { repairRouter } = require('../routes/repair.routes');
 const globalErrorHandler = require('../controllers/error.controller');
 const initModel = require('./initModels');
 const { authRouter } = require('../routes/auth.routes');
+const AppError = require('../utils/appError');
 
 class Server {
   constructor() {
@@ -16,7 +17,7 @@ class Server {
     this.paths = {
       repairs: '/api/v1/repairs',
       users: '/api/v1/users',
-      autth: '/api/v1/auth',
+      auth: '/api/v1/auth',
     };
 
     //Connect to db
@@ -38,7 +39,7 @@ class Server {
   routes() {
     this.app.use(this.paths.users, userRouter);
     this.app.use(this.paths.repairs, repairRouter);
-    this.app.use(this.paths.autth, authRouter);
+    this.app.use(this.paths.auth, authRouter);
 
     this.app.all('*', (req, res, next) => {
       return next(

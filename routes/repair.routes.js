@@ -9,12 +9,9 @@ const {
 const { validIfExistRepair } = require('../middlewares/repair.middleware');
 const { validateFields } = require('../middlewares/validateFields.middleware');
 const { check } = require('express-validator');
+const { protect, restrictTo } = require('../middlewares/auth.middleware');
 
 const router = Router();
-
-router.get('/', findAllRepairs);
-
-router.get('/:id', validIfExistRepair, findOneRepair);
 
 router.post(
   '/',
@@ -30,6 +27,12 @@ router.post(
   createRepair
 );
 
+router.use(protect);
+
+router.get('/', findAllRepairs, restrictTo('employee'));
+
+router.get('/:id', validIfExistRepair, findOneRepair, restrictTo('employee'));
+
 router.patch(
   '/:id',
   [
@@ -38,11 +41,12 @@ router.patch(
     check('userId', 'The userId is mandatory').not().isEmpty(),
   ],
   validIfExistRepair,
+  restrictTo('employee'),
 
   updateRepair
 );
 
-router.delete('/:id', validIfExistRepair, deleteRepair);
+router.delete('/:id', validIfExistRepair, deleteRepair, restrictTo('employee'));
 
 module.exports = {
   repairRouter: router,
